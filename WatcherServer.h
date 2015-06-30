@@ -1,5 +1,5 @@
-#ifndef SERVER_H
-#define SERVER_H
+#ifndef WATCHERSERVER_H
+#define WATCHERSERVER_H
 
 #include <QTcpServer>
 #include <QObject>
@@ -9,7 +9,7 @@
 #include <QTimer>
 
 
-class TCPServer : public QTcpServer
+class WatcherServer : public QTcpServer
 {
     Q_OBJECT
 public:

@@ -18,12 +18,20 @@ SOURCES += main.cpp\
         treewidget.cpp \
     TCPServer.cpp \
     tcpclientsocket.cpp \
-    common.cpp
+    common.cpp \
+    MonitorClient.cpp \
+    WatcherClient.cpp \
+    MonitorServer.cpp \
+    WatcherServer.cpp
 
 HEADERS  += treewidget.h \
     TCPServer.h \
     tcpclientsocket.h \
-    common.h
+    common.h \
+    MonitorClient.h \
+    WatcherClient.h \
+    MonitorServer.h \
+    WatcherServer.h
 
 FORMS    += treewidget.ui
 #LIBS += /home/ttc/qttest/build-xmltest-Desktop_Qt_5_4_0_GCC_64bit-Debug/libtinyxml.a

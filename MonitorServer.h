@@ -1,6 +1,5 @@
-#ifndef SERVER_H
-#define SERVER_H
-
+#ifndef MONITORSERVER_H
+#define MONITORSERVER_H
 #include <QTcpServer>
 #include <QObject>
 #include "tcpclientsocket.h"
@@ -8,15 +7,18 @@
 #include"WatcherClient.h"
 #include <QTimer>
 
+#define CMD_LOAD 0x01                               //  Load *.grc and *.xml of flow graph
+#define CMD_START 0x0x2                             //  Running signal processing program in each nodes.
+#define CMD_KILL 0x03                                  //  Kill signal processing thread in each nodes.
+#define CMD_SETPARAM 0x04                      //   Set system param by relaying *.xml
+#define CMD_GETSTATUS 0x05                     //   Get system status by relaying *.xml
 
-class TCPServer : public QTcpServer
+class MonitorServer : public QTcpServer
 {
     Q_OBJECT
 public:
     TCPServer(QObject *parent=0,int port=0);
-    QList<TcpClientSocket*> tcpClientSocketList;
      QList <MonitorClient> MonitorList;
-     QList <WatcherClient> WatcherList;
     QTimer *timer;
 signals:
     void updateServer(QString,int);
