@@ -9,6 +9,10 @@
 #include <iostream>
 #include <QSettings>
 #include <QDir>
+#include <QTime>
+
+#include <iostream>
+#include<QFile>
 using namespace std;
 
 const QString glbstrXMLParamFile = "Top_block_param.xml";
@@ -17,6 +21,8 @@ QString glbLocalAdress = "127.0.0.1";
 int         glbLocalPort = 8010;
 QString glbServerAdress = "127.0.0.1";
 int         glbServerPort = 9090;
+
+QFile glbfileLog;
 
 void InitSystemParam()
 {
@@ -80,5 +86,23 @@ bool KillProcess(QString sName)
         QTest::qWait(100);
         return true;
     }
+}
+
+
+void LogOut(QString strLog)
+{
+    cout << QTime::currentTime().toString("hh:mm:ss").toStdString().c_str() << " "<<strLog.toStdString().c_str() << endl;
+}
+
+void LogFile(QFile &file, QString strLog)
+{
+    if (!file.exists())
+    {
+        LogOut("Log file is not exist.");
+        return;
+    }
+    strLog = QTime::currentTime().toString("hh:mm:ss.zzz ") + strLog;
+    file.write(strLog.toStdString().c_str(),strLog.length());
+    LogOut(strLog);
 }
 

@@ -1,4 +1,4 @@
-#include "tcpclientsocket.h"
+#include "MonitorClient.h"
 #include "common.h"
 #include <iostream>
 #include <QFile>
@@ -64,7 +64,7 @@ void MonitorClient::readMsgBody(stFrameHeader &header,char * body,int bodyLength
         memcpy(FileName,body,56);
         QString XMLFileName(FileName);
         QFile paraFile(XMLFileName);
-        QString strlog;TCPServer
+        QString strlog;
         if (!paraFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
         {
             strlog = "Error:Can't open" + XMLFileName +"file!!!" ;

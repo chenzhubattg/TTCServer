@@ -2,6 +2,7 @@
 #define COMMON_H
 #include <string>
 #include <QString>
+#include <QFile>
 
 
 
@@ -102,7 +103,11 @@ public:
     int     nCoreNum;
 //    int     nMem;
 };      // ID : 000 001 010 011 100  101 110 111
+extern QFile glbfileLog;
 extern bool KillProcess(QString sName);
 extern void InitSystemParam();
+extern void LogOut(QString strLog);
+extern void LogFile(QFile &file, QString strLog);
+
 #endif  // DATACLASS
 

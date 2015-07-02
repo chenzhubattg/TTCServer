@@ -1,4 +1,4 @@
-#include "TCPServer.h"
+#include "WatcherServer.h"
 #include <iostream>
 #include <QDebug>
 #include "treewidget.h"
@@ -7,52 +7,37 @@ extern treeWidget *pWidget;
 WatcherServer::WatcherServer(QObject *parent,int port)
     :QTcpServer(parent)
 {
-
-
-
-//    if(listen(QHostAddress::Any,port))
-//    {
-//        cout << "Watcher start listening" << endl;
-//    }
-//    else
-//    {
- //       cout << "Listening is failed! " << endl;
- //   }
+    m_nListenPort = port;
+    m_pMonServer = NULL;
 }
 void WatcherServer::StartListen()
 {
-    QString strLog = "Start Listening.port:" + QString::number(glbLocalPort) ;
-    Log(strLog,0,false);
-    if(listen(QHostAddress::Any,glbLocalPort))
-        {
-            cout << "Watcher start listening" << endl;
-        }
-        else
-        {
-           cout << "Listening is failed! " << endl;
-       }
+    QString strLog = "Start Listening.port:" + QString::number(m_nListenPort) ;
+    LogFile(glbfileLog,strLog);
+    if(listen(QHostAddress::Any,m_nListenPort))
+    {
+        LogFile(glbfileLog,"Watcher server start listening");
+    }
+    else
+    {
+        LogFile(glbfileLog,"Watcher server start Listening failure. ");
+    }
 }
 
 void WatcherServer::incomingConnection(qintptr socketDescriptor)
 {
-    TcpClientSocket *tcpClientSocket=new TcpClientSocket(this);
+    WatcherClient *tcpClientSocket=new WatcherClient(this);
     connect(tcpClientSocket,SIGNAL(updateClients(QString,int)),this,SLOT(updateClients(QString,int)));
     connect(tcpClientSocket,SIGNAL(disconnected(int)),this,SLOT(slotDisconnected(int)));
     connect(tcpClientSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
     tcpClientSocket->setSocketDescriptor(socketDescriptor);
     QHostAddress	 add = tcpClientSocket->localAddress();
     quint16 port = tcpClientSocket->localPort();
-    qDebug() << add.toString() << " port:"<< port;
-    tcpClientSocketList.append(tcpClientSocket);
-
+    WatcherList.append(tcpClientSocket);
     QString strLog = "IP " + tcpClientSocket->peerAddress().toString() + " connect this server.";
-    Log(strLog,0,false);
-
-
-   // timer = new QTimer(this);
-    //connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-  //  timer->start(1000);
+    LogFile(glbfileLog,strLog);
 }
+
 void WatcherServer::update()
 {
     static int nfre = 100;
@@ -67,12 +52,17 @@ void WatcherServer::update()
 
 }
 
+void WatcherServer::setMonitorServer(MonitorServer *pServer)
+{
+    m_pMonServer = pServer;
+}
+
 void WatcherServer::updateClients(QString msg,int length)
 {
-    emit updateServer(msg,length);TCPServer
-    for(int i=0;i<tcpClientSocketList.count();i++)
+    emit updateServer(msg,length);
+    for(int i=0;i<WatcherList.count();i++)
     {
-        QTcpSocket *item = tcpClientSocketList.at(i);
+        QTcpSocket *item = WatcherList.at(i);
         if(item->write(msg.toLatin1(),length)!=length)
         {
             continue;
@@ -82,9 +72,9 @@ void WatcherServer::updateClients(QString msg,int length)
 
 void WatcherServer::SendMsg(const char *pdata,int length)
 {
-    for(int i=0;i<tcpClientSocketList.count();i++)
+    for(int i=0;i<WatcherList.count();i++)
     {
-        QTcpSocket *item = tcpClientSocketList.at(i);
+        QTcpSocket *item = WatcherList.at(i);
         if(item->write(pdata,length)!=length)
         {
             continue;
@@ -98,19 +88,14 @@ int  WatcherServer::ConnectedNum()
 
 void WatcherServer::slotDisconnected(int descriptor)
 {
-    for(int i=0;i<tcpClientSocketList.count();i++)
+    for(int i=0;i<WatcherList.count();i++)
     {
-        QTcpSocket *item = tcpClientSocketList.at(i);
+        QTcpSocket *item = WatcherList.at(i);
         if(item->socketDescriptor()==descriptor)
         {
-            tcpClientSocketList.removeAt(i);
+            WatcherList.removeAt(i);
             return;
         }
     }
     return;
-}
-void WatcherServer::Log(QString &strLog,int type = 0,bool display = false)
-{
-    //    emit Msg_log(strLog,type,display);
-    pWidget->log(strLog,type,display);
 }

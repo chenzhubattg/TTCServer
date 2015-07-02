@@ -1,4 +1,4 @@
-#include "TCPServer.h"
+#include "MonitorServer.h"
 #include <iostream>
 #include <QDebug>
 #include "treewidget.h"
@@ -7,6 +7,7 @@ extern treeWidget *pWidget;
 MonitorServer::MonitorServer(QObject *parent,int port)
     :QTcpServer(parent)
 {
+    m_pWatcherServer = NULL;
 }
 void MonitorServer::StartListen()
 {
@@ -24,7 +25,7 @@ void MonitorServer::StartListen()
 
 void MonitorServer::incomingConnection(qintptr socketDescriptor)
 {
-    TcpClientSocket *tcpClientSocket=new TcpClientSocket(this);
+    MonitorClient *tcpClientSocket=new MonitorClient(this);
     connect(tcpClientSocket,SIGNAL(updateClients(QString,int)),this,SLOT(updateClients(QString,int)));
     connect(tcpClientSocket,SIGNAL(disconnected(int)),this,SLOT(slotDisconnected(int)));
     connect(tcpClientSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
@@ -32,7 +33,7 @@ void MonitorServer::incomingConnection(qintptr socketDescriptor)
     QHostAddress	 add = tcpClientSocket->localAddress();
     quint16 port = tcpClientSocket->localPort();
     qDebug() << add.toString() << " port:"<< port;
-    tcpClientSocketList.append(tcpClientSocket);
+    MonitorList.append(tcpClientSocket);
 
     QString strLog = "IP " + tcpClientSocket->peerAddress().toString() + " connect this server.";
     Log(strLog,0,false);
@@ -47,7 +48,7 @@ void MonitorServer::update()
     static int nfre = 100;
     if (nfre == 2000)
         nfre = 100;
-    QTcpSocket *item = tcpClientSocketList.at(0);
+    QTcpSocket *item = MonitorList.at(0);
     // char *pdata="abcde";
     //  item->write(pdata,6);
     QString str = QString::number(nfre);
@@ -59,9 +60,9 @@ void MonitorServer::update()
 void MonitorServer::updateClients(QString msg,int length)
 {
     emit updateServer(msg,length);
-    for(int i=0;i<tcpClientSocketList.count();i++)
+    for(int i=0;i<MonitorList.count();i++)
     {
-        QTcpSocket *item = tcpClientSocketList.at(i);
+        QTcpSocket *item = MonitorList.at(i);
         if(item->write(msg.toLatin1(),length)!=length)
         {
             continue;
@@ -71,9 +72,9 @@ void MonitorServer::updateClients(QString msg,int length)
 
 void MonitorServer::SendMsg(const char *pdata,int length)
 {
-    for(int i=0;i<tcpClientSocketList.count();i++)
+    for(int i=0;i<MonitorList.count();i++)
     {
-        QTcpSocket *item = tcpClientSocketList.at(i);
+        QTcpSocket *item = MonitorList.at(i);
         if(item->write(pdata,length)!=length)
         {
             continue;
@@ -82,17 +83,22 @@ void MonitorServer::SendMsg(const char *pdata,int length)
 }
 int  MonitorServer::ConnectedNum()
 {
-    return tcpClientSocketList.count();
+    return MonitorList.count();
+}
+
+void MonitorServer::setWatcherServer(WatcherServer *pServer)
+{
+    m_pWatcherServer = pServer;
 }
 
 void MonitorServer::slotDisconnected(int descriptor)
 {
-    for(int i=0;i<tcpClientSocketList.count();i++)
+    for(int i=0;i<MonitorList.count();i++)
     {
-        QTcpSocket *item = tcpClientSocketList.at(i);
+        QTcpSocket *item = MonitorList.at(i);
         if(item->socketDescriptor()==descriptor)
         {
-            tcpClientSocketList.removeAt(i);
+            MonitorList.removeAt(i);
             return;
         }
     }

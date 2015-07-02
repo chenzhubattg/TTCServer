@@ -1,4 +1,4 @@
-#include "tcpclientsocket.h"
+#include "WatcherClient.h"
 #include "common.h"
 #include <iostream>
 #include <QFile>
@@ -55,7 +55,6 @@ void WatcherClient::readMsgBody(stFrameHeader &header,char * body,int bodyLength
     }
     case CMD_START:
     {
-
      //   pserver->SendMsg();
         break;
     }
@@ -96,6 +95,11 @@ void WatcherClient::readMsgBody(stFrameHeader &header,char * body,int bodyLength
     default:
         break;
     }
+}
+
+void WatcherClient::setMonitorServer(MonitorServer *pServer)
+{
+    pMServer = pServer;
 }
 
 void WatcherClient::slotDisconnected()

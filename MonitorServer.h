@@ -5,6 +5,7 @@
 #include "tcpclientsocket.h"
 #include "MonitorClient.h"
 #include"WatcherClient.h"
+#include "WatcherServer.h"
 #include <QTimer>
 
 #define CMD_LOAD 0x01                               //  Load *.grc and *.xml of flow graph
@@ -17,9 +18,10 @@ class MonitorServer : public QTcpServer
 {
     Q_OBJECT
 public:
-    TCPServer(QObject *parent=0,int port=0);
-     QList <MonitorClient> MonitorList;
+    MonitorServer(QObject *parent=0,int port=0);
+     QList <MonitorClient *> MonitorList;
     QTimer *timer;
+    WatcherServer *m_pWatcherServer;
 signals:
     void updateServer(QString,int);
     void Msg_log(QString &strLog,int type,bool display);
@@ -33,6 +35,7 @@ public:
     void Log(QString &strLog,int type,bool display);
     void StartListen();
     int  ConnectedNum();
+    void setWatcherServer(WatcherServer *pServer);
 protected:
     void incomingConnection(qintptr socketDescriptor);
 };

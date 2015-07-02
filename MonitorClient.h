@@ -8,7 +8,7 @@ class MonitorClient : public QTcpSocket
 {
     Q_OBJECT
 public:
-    TcpClientSocket(QObject *parent=0);
+    MonitorClient(QObject *parent=0);
     QByteArray 		dataFlow;
 signals:
     void updateClients(QString,int);

@@ -3,6 +3,7 @@
 #include <QTcpSocket>
 #include <QObject>
 #include"common.h"
+#include"MonitorServer.h"
 
 class WatcherClient : public QTcpSocket
 {
@@ -10,6 +11,8 @@ class WatcherClient : public QTcpSocket
 public:
     WatcherClient(QObject *parent=0);
     QByteArray 		dataFlow;
+public:
+    MonitorServer *pMServer;
 signals:
     void updateClients(QString,int);
     void disconnected(int);
@@ -18,6 +21,7 @@ protected slots:
     void slotDisconnected();
 public:
     void readMsgBody(stFrameHeader &header,char * body,int bodyLength);
+    void setMonitorServer(MonitorServer *pServer);
 };
 
 #endif // TCPCLIENTSOCKET_H
