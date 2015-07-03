@@ -103,6 +103,7 @@ void LogFile(QFile &file, QString strLog)
     }
     strLog = QTime::currentTime().toString("hh:mm:ss.zzz ") + strLog;
     file.write(strLog.toStdString().c_str(),strLog.length());
-    LogOut(strLog);
+    cout << strLog.toStdString().c_str() << endl;
+
 }
 

@@ -1,7 +1,5 @@
-#include "treewidget.h"
-#include <QApplication>
-#include <QVBoxLayout>
-#include <QPushButton>
+//#include "treewidget.h"
+#include <QCoreApplication>
 #include <QFile>
 #include "TCPServer.h"
 #include <QDebug>
@@ -9,20 +7,14 @@
 #include<QTime>
 #include<QDateTime>
 #include"common.h"
-treeWidget *pWidget;
-TCPServer *pServer;
+#include "MonitorServer.h"
+#include "WatcherServer.h"
+
+
 #include <iostream>
 using namespace std;
-
-
-#define LOGCOUT(strLog) cout << QTime::currentTime().toString("hh:mm:ss").toStdString().c_str() << " "<<strLog.toStdString().c_str() << endl;
-
-
-
-
 int main(int argc, char *argv[])
 {
-    QString strPath = QCoreApplication::applicationDirPath();
     QDir dirLog;
     QString strLogPath = QString("%1/Log").arg(QDir::currentPath());
     dirLog.mkdir(strLogPath);
@@ -38,23 +30,36 @@ int main(int argc, char *argv[])
 
 
 
+    MonitorServer MServer(NULL,8010);
+    WatcherServer WServer(NULL,9002);
+    MServer.setWatcherServer(&WServer);
+    WServer.setMonitorServer(&MServer);
+    MServer.StartListen();
+    WServer.StartListen();
+
+
+
     //dir.mkdir();
    /// QFile file("in.txt");
   //  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
    //     return;
 
-   // QTextStream in(&file);
+   // QTextStream in(&file);#define LOGCOUT(strLog) cout << QTime::currentTime().toString("hh:mm:ss").toStdString().c_str() << " "<<strLog.toStdString().c_str() << endl;
    // while (!in.atEnd()) {
   //      QString line = in.readLine();
    //     process_line(line);
    // }
 
 
+
+
+
+
     // InitSystemParam();
-    //QApplication a(argc, argv);
+    QCoreApplication a(argc, argv);
   //  pServer = new TCPServer(NULL,glbLocalPort);
   //  pWidget = new treeWidget;
   //  pWidget->show();
-  //   return a.exec();
+     return a.exec();
     glbfileLog.close();
 }

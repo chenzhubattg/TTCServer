@@ -97,10 +97,6 @@ void WatcherClient::readMsgBody(stFrameHeader &header,char * body,int bodyLength
     }
 }
 
-void WatcherClient::setMonitorServer(MonitorServer *pServer)
-{
-    pMServer = pServer;
-}
 
 void WatcherClient::slotDisconnected()
 {

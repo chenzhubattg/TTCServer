@@ -4,35 +4,42 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+#QT       += core gui
+#QT       += network
+#QT       += testlib
+#
+#greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+#
+#TARGET = ../TTCbin/TTCServer
+#TEMPLATE = app
+
+
+QT       += core
 QT       += network
 QT       += testlib
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT       -= gui
 
 TARGET = ../TTCbin/TTCServer
+CONFIG   += console
+CONFIG   -= app_bundle
+
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        treewidget.cpp \
-    TCPServer.cpp \
-    tcpclientsocket.cpp \
     common.cpp \
     MonitorClient.cpp \
     WatcherClient.cpp \
     MonitorServer.cpp \
     WatcherServer.cpp
 
-HEADERS  += treewidget.h \
-    TCPServer.h \
-    tcpclientsocket.h \
-    common.h \
+HEADERS  += common.h \
     MonitorClient.h \
     WatcherClient.h \
     MonitorServer.h \
     WatcherServer.h
 
-FORMS    += treewidget.ui
+#FORMS    += treewidget.ui
 #LIBS += /home/ttc/qttest/build-xmltest-Desktop_Qt_5_4_0_GCC_64bit-Debug/libtinyxml.a
-LIBS += /usr/local/lib/libtinyxml.so
+#LIBS += /usr/local/lib/libtinyxml.so

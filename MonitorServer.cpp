@@ -1,26 +1,26 @@
 #include "MonitorServer.h"
 #include <iostream>
 #include <QDebug>
-#include "treewidget.h"
 using namespace std;
-extern treeWidget *pWidget;
+
 MonitorServer::MonitorServer(QObject *parent,int port)
     :QTcpServer(parent)
 {
     m_pWatcherServer = NULL;
+    m_nListenPort = port;
 }
 void MonitorServer::StartListen()
 {
-    QString strLog = "Start Listening.port:" + QString::number(glbLocalPort) ;
-    Log(strLog,0,false);
-    if(listen(QHostAddress::Any,glbLocalPort))
-        {
-            cout << "Watcher start listening" << endl;
-        }
-        else
-        {
-           cout << "Listening is failed! " << endl;
-       }
+    QString strLog = "Monitor server starts listening at port " + QString::number(m_nListenPort) + "." ;
+    if(listen(QHostAddress::Any,m_nListenPort))
+    {
+        LogFile(glbfileLog,strLog);
+    }
+    else
+    {
+        strLog = "Monitor server start listening failure.  port : " + QString::number(m_nListenPort);
+        LogFile(glbfileLog,strLog);
+    }
 }
 
 void MonitorServer::incomingConnection(qintptr socketDescriptor)
@@ -35,8 +35,8 @@ void MonitorServer::incomingConnection(qintptr socketDescriptor)
     qDebug() << add.toString() << " port:"<< port;
     MonitorList.append(tcpClientSocket);
 
-    QString strLog = "IP " + tcpClientSocket->peerAddress().toString() + " connect this server.";
-    Log(strLog,0,false);
+    QString strLog = "IP " + tcpClientSocket->peerAddress().toString() + " connect MonitorServer.";
+    LogFile(glbfileLog,strLog);
 
 
    // timer = new QTimer(this);
@@ -86,7 +86,7 @@ int  MonitorServer::ConnectedNum()
     return MonitorList.count();
 }
 
-void MonitorServer::setWatcherServer(WatcherServer *pServer)
+void MonitorServer::setWatcherServer(QTcpServer *pServer)
 {
     m_pWatcherServer = pServer;
 }
@@ -104,8 +104,4 @@ void MonitorServer::slotDisconnected(int descriptor)
     }
     return;
 }
-void MonitorServer::Log(QString &strLog,int type = 0,bool display = false)
-{
-    //    emit Msg_log(strLog,type,display);
-    pWidget->log(strLog,type,display);
-}
+

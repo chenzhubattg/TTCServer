@@ -21,7 +21,8 @@ public:
     MonitorServer(QObject *parent=0,int port=0);
      QList <MonitorClient *> MonitorList;
     QTimer *timer;
-    WatcherServer *m_pWatcherServer;
+    QTcpServer *m_pWatcherServer;
+    int m_nListenPort;
 signals:
     void updateServer(QString,int);
     void Msg_log(QString &strLog,int type,bool display);
@@ -32,10 +33,9 @@ public slots:
 
 public:
     void SendMsg(const char *pdata,int length);
-    void Log(QString &strLog,int type,bool display);
     void StartListen();
     int  ConnectedNum();
-    void setWatcherServer(WatcherServer *pServer);
+    void setWatcherServer(QTcpServer *pServer);
 protected:
     void incomingConnection(qintptr socketDescriptor);
 };

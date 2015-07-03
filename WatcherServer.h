@@ -3,11 +3,10 @@
 
 #include <QTcpServer>
 #include <QObject>
-#include "tcpclientsocket.h"
-#include "MonitorClient.h"
 #include"WatcherClient.h"
 #include"MonitorServer.h"
 #include <QTimer>
+#include <QList>
 
 
 
@@ -22,7 +21,7 @@ public:
     QTimer *timer;
     QTcpServer *m_pMonServer;
     int                m_nListenPort;
-    MonitorServer *m_pMServer;
+    QTcpServer *m_pMServer;
 signals:
     void updateServer(QString,int);
     void Msg_log(QString &strLog,int type,bool display);
@@ -30,7 +29,7 @@ public slots:
     void updateClients(QString,int);
     void slotDisconnected(int);
     void update();
-    void setMonitorServer(MonitorServer *pServer);
+    void setMonitorServer(QTcpServer *pServer);
 
 public:
     void SendMsg(const char *pdata,int length);

@@ -1,9 +1,7 @@
 #include "WatcherServer.h"
 #include <iostream>
 #include <QDebug>
-#include "treewidget.h"
 using namespace std;
-extern treeWidget *pWidget;
 WatcherServer::WatcherServer(QObject *parent,int port)
     :QTcpServer(parent)
 {
@@ -12,15 +10,15 @@ WatcherServer::WatcherServer(QObject *parent,int port)
 }
 void WatcherServer::StartListen()
 {
-    QString strLog = "Start Listening.port:" + QString::number(m_nListenPort) ;
-    LogFile(glbfileLog,strLog);
+    QString strLog = "Watcher server starts listening at port " + QString::number(m_nListenPort) + "." ;
     if(listen(QHostAddress::Any,m_nListenPort))
     {
-        LogFile(glbfileLog,"Watcher server start listening");
+        LogFile(glbfileLog,strLog);
     }
     else
     {
-        LogFile(glbfileLog,"Watcher server start Listening failure. ");
+        strLog = "Watcher server start listening failure.  port : " + QString::number(m_nListenPort);
+        LogFile(glbfileLog,strLog);
     }
 }
 
@@ -34,7 +32,7 @@ void WatcherServer::incomingConnection(qintptr socketDescriptor)
     QHostAddress	 add = tcpClientSocket->localAddress();
     quint16 port = tcpClientSocket->localPort();
     WatcherList.append(tcpClientSocket);
-    QString strLog = "IP " + tcpClientSocket->peerAddress().toString() + " connect this server.";
+    QString strLog = "IP " + tcpClientSocket->peerAddress().toString() + " connect WatcherServer.";
     LogFile(glbfileLog,strLog);
 }
 
@@ -52,7 +50,7 @@ void WatcherServer::update()
 
 }
 
-void WatcherServer::setMonitorServer(MonitorServer *pServer)
+void WatcherServer::setMonitorServer(QTcpServer *pServer)
 {
     m_pMonServer = pServer;
 }
