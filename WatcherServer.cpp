@@ -27,7 +27,7 @@ void WatcherServer::incomingConnection(qintptr socketDescriptor)
     WatcherClient *tcpClientSocket=new WatcherClient(this);
     connect(tcpClientSocket,SIGNAL(updateClients(QString,int)),this,SLOT(updateClients(QString,int)));
     connect(tcpClientSocket,SIGNAL(disconnected(int)),this,SLOT(slotDisconnected(int)));
-    connect(tcpClientSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
+   // connect(tcpClientSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
     tcpClientSocket->setSocketDescriptor(socketDescriptor);
     QHostAddress	 add = tcpClientSocket->localAddress();
     quint16 port = tcpClientSocket->localPort();

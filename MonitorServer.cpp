@@ -28,17 +28,14 @@ void MonitorServer::incomingConnection(qintptr socketDescriptor)
     MonitorClient *tcpClientSocket=new MonitorClient(this);
     connect(tcpClientSocket,SIGNAL(updateClients(QString,int)),this,SLOT(updateClients(QString,int)));
     connect(tcpClientSocket,SIGNAL(disconnected(int)),this,SLOT(slotDisconnected(int)));
-    connect(tcpClientSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
+ //   connect(tcpClientSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
     tcpClientSocket->setSocketDescriptor(socketDescriptor);
     QHostAddress	 add = tcpClientSocket->localAddress();
     quint16 port = tcpClientSocket->localPort();
-    qDebug() << add.toString() << " port:"<< port;
     MonitorList.append(tcpClientSocket);
 
-    QString strLog = "IP " + tcpClientSocket->peerAddress().toString() + " connect MonitorServer.";
+    QString strLog = QString("%1(%2) connect MonitorServer.").arg(tcpClientSocket->peerAddress().toString()).arg(tcpClientSocket->peerPort());
     LogFile(glbfileLog,strLog);
-
-
    // timer = new QTimer(this);
     //connect(timer, SIGNAL(timeout()), this, SLOT(update()));
   //  timer->start(1000);
@@ -98,6 +95,8 @@ void MonitorServer::slotDisconnected(int descriptor)
         QTcpSocket *item = MonitorList.at(i);
         if(item->socketDescriptor()==descriptor)
         {
+             QString strLog = QString("%1(%2) disconnect MonitorServer.").arg(item->peerAddress().toString()).arg(item->peerPort());
+             LogFile(glbfileLog,strLog);
             MonitorList.removeAt(i);
             return;
         }

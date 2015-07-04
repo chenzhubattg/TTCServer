@@ -101,9 +101,9 @@ void LogFile(QFile &file, QString strLog)
         LogOut("Log file is not exist.");
         return;
     }
-    strLog = QTime::currentTime().toString("hh:mm:ss.zzz ") + strLog;
+    strLog = QTime::currentTime().toString("hh:mm:ss.zzz ") + strLog + "\n";
     file.write(strLog.toStdString().c_str(),strLog.length());
-    cout << strLog.toStdString().c_str() << endl;
+    cout << strLog.toStdString().c_str();
 
 }
 
