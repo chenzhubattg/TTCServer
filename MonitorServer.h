@@ -8,11 +8,8 @@
 #include "WatcherServer.h"
 #include <QTimer>
 
-#define CMD_LOAD 0x01                               //  Load *.grc and *.xml of flow graph
-#define CMD_START 0x0x2                             //  Running signal processing program in each nodes.
-#define CMD_KILL 0x03                                  //  Kill signal processing thread in each nodes.
-#define CMD_SETPARAM 0x04                      //   Set system param by relaying *.xml
-#define CMD_GETSTATUS 0x05                     //   Get system status by relaying *.xml
+
+
 
 class MonitorServer : public QTcpServer
 {
@@ -26,8 +23,11 @@ public:
 signals:
     void updateServer(QString,int);
     void Msg_log(QString &strLog,int type,bool display);
+     void updataClients(stFrameHeader *header,char * body,int bodyLength);
 public slots:
     void updateClients(QString,int);
+    void slotsTest(QString ,int );
+    void slotReceive(stFrameHeader *header,char * body,int bodyLength);
     void slotDisconnected(int);
     void update();
 
@@ -39,7 +39,6 @@ public:
 protected:
     void incomingConnection(qintptr socketDescriptor);
 };
-
 #endif // SERVER
 
 

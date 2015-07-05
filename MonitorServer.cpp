@@ -1,4 +1,5 @@
 #include "MonitorServer.h"
+#include "WatcherServer.h"
 #include <iostream>
 #include <QDebug>
 using namespace std;
@@ -27,6 +28,9 @@ void MonitorServer::incomingConnection(qintptr socketDescriptor)
 {
     MonitorClient *tcpClientSocket=new MonitorClient(this);
     connect(tcpClientSocket,SIGNAL(updateClients(QString,int)),this,SLOT(updateClients(QString,int)));
+        connect(tcpClientSocket,SIGNAL(signal(QString ,int)),this,SLOT(slotsTest(QString ,int )));
+
+//    connect(tcpClientSocket,SIGNAL(updataClients(stFrameHeader *,char * ,int)),this,SLOT(slotReceive(stFrameHeader *,char * ,int)));
     connect(tcpClientSocket,SIGNAL(disconnected(int)),this,SLOT(slotDisconnected(int)));
  //   connect(tcpClientSocket,SIGNAL(readyRead()),this,SLOT(dataReceived()));
     tcpClientSocket->setSocketDescriptor(socketDescriptor);
@@ -67,6 +71,11 @@ void MonitorServer::updateClients(QString msg,int length)
     }
 }
 
+void MonitorServer::slotsTest(QString , int )
+{
+
+}
+
 void MonitorServer::SendMsg(const char *pdata,int length)
 {
     for(int i=0;i<MonitorList.count();i++)
@@ -104,3 +113,171 @@ void MonitorServer::slotDisconnected(int descriptor)
     return;
 }
 
+
+void MonitorServer::slotReceive(stFrameHeader *header,char * body,int bodyLength)
+{
+
+    qint16 cmd = header->cmd;
+    QString strLog;
+    switch(cmd)
+    {
+    case CMD_LOAD:                                //  Load *.grc and *.xml of flow graph
+    {
+        if (glbWatcherStatus != Idle)
+        {
+            strLog = "System is running,LOAD_CMD is rejected.";
+            LogFile(glbfileLog,strLog);
+        }
+        LogFile(glbfileLog,"Receive CMD_LOAD cmd.");
+        char FileName[56];
+        memcpy(FileName,body,56);
+        QString GrcFileName(FileName);
+        GrcFileName = glbstrWorkDir + "/" + GrcFileName;
+        QFile GrcFile(GrcFileName);
+        if (!GrcFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
+        {
+             strLog = "Can't open" + GrcFileName +"file." ;
+            LogFile(glbfileLog,strLog);
+            return ;
+        }
+        int fileLen = *(int *)(body + 56);
+        char *pdata = body + 56 + sizeof(int);
+        if (fileLen != GrcFile.write(pdata,fileLen))
+        {
+            strLog = "Save GRC file failed" ;
+           LogFile(glbfileLog,strLog);
+            GrcFile.close();
+            return;
+        }
+        else
+        {
+            strLog = "Save GRC file successuflly!!!" ;
+           LogFile(glbfileLog,strLog);
+        }
+        GrcFile.close();
+        //Save XML file
+        pdata = pdata + fileLen;
+        memcpy(FileName,pdata,56);
+        QString XMLFileName(FileName);
+        XMLFileName = glbstrWorkDir + "/" + XMLFileName;
+        QFile XMLFile(FileName);
+        if (!XMLFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
+        {
+             strLog = "Can't open" + XMLFileName +"file!" ;
+            LogFile(glbfileLog,strLog);
+            return ;
+        }
+        fileLen = *(int *)(pdata + 56);
+        pdata = pdata + 56 + sizeof(int);
+        if (fileLen!= XMLFile.write(pdata,fileLen))
+        {
+            strLog = "Write XML failed" ;
+           LogFile(glbfileLog,strLog);
+            XMLFile.close();
+            return;
+        }
+        else
+        {
+            strLog = "Save GRC file successuflly!!!" ;
+           LogFile(glbfileLog,strLog);
+        }
+        XMLFile.close();
+        WatcherServer *pWserver = (WatcherServer *) m_pWatcherServer;
+        pWserver->updateClients((char *)header,sizeof(stFrameHeader));
+        pWserver->updateClients(body,bodyLength);
+        break;
+    }
+    case CMD_START:                              //  Running signal processing program in each nodes.
+        break;
+    case  CMD_KILL:                                  //  Kill signal processing thread in each nodes.
+        break;
+    case  CMD_SETPARAM:                      //   Set system param by relaying *.xml
+        break;
+    case  CMD_GETSTATUS:                     //   Get system status by relaying *.xml
+        break;
+    }
+
+    /*
+    qint16 cmd = header->cmd;
+    switch (cmd) {
+    case CMD_LOAD:
+    {
+
+        break;
+    }
+    case CMD_KILL:
+    {
+
+    }
+    case CMD_START:
+    {
+
+     //   pserver->SendMsg();
+        break;
+    }
+    case CMD_STOP:
+        break;
+    case CMD_SET:
+    {
+        cout << "Info:Receive CMD_SET cmd!!!" << endl;
+        char FileName[56];
+        memcpy(FileName,body,56);
+        QString XMLFileName(FileName);
+        QFile paraFile(XMLFileName);
+        QString strlog;
+        if (!paraFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
+        {
+            strlog = "Error:Can't open" + XMLFileName +"file!!!" ;
+            cout << strlog.toStdString().c_str() << endl;
+            return ;        cout << "Info:Receive CMD_SET cmd!!!" << endl;
+        char FileName[56];
+        memcpy(FileName,body,56);
+        QString XMLFileName(FileName);
+        QFile paraFile(XMLFileName);
+        QString strlog;
+        if (!paraFile.open(QIODevice::ReadWrite | QIODevice::Truncate))
+        {
+            strlog = "Error:Can't open" + XMLFileName +"file!!!" ;
+            cout << strlog.toStdString().c_str() << endl;
+            return ;
+        }
+        char *pdata = body + 56;
+        if ((bodyLength - 56) != paraFile.write(pdata,bodyLength - 56))
+        {
+            cout <<  "Error:Write param info failed!!!" << endl;
+            paraFile.close();
+            return;
+        }
+        else
+        {
+            cout << "Info:Write para info to para file successuflly!!!" << endl;
+        }
+       // stFrameHeader  da;
+       // da.cmd = CMD_SET;
+        //da.DATA_LEN = 0;
+        //pserver->SendMsg((char *)&da,sizeof(stFrameHeader));
+        //cout << "Info:send Set Param cmd to radio!!!" << endl;
+        break;
+        }
+        char *pdata = body + 56;
+        if ((bodyLength - 56) != paraFile.write(pdata,bodyLength - 56))
+        {
+            cout <<  "Error:Write param info failed!!!" << endl;
+            paraFile.close();
+            return;
+        }
+        else
+        {
+            cout << "Info:Write para info to para file successuflly!!!" << endl;
+        }
+       // stFrameHeader  da;
+       // da.cmd = CMD_SET;
+        //da.DATA_LEN = 0;
+        //pserver->SendMsg((char *)&da,sizeof(stFrameHeader));
+        //cout << "Info:send Set Param cmd to radio!!!" << endl;
+        break;
+    }
+    default:
+        break;
+    }*/
+}

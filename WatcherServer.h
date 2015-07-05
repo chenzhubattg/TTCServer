@@ -24,6 +24,7 @@ public:
     QTcpServer *m_pMServer;
 signals:
     void updateServer(QString,int);
+
     void Msg_log(QString &strLog,int type,bool display);
 public slots:
     void updateClients(QString,int);
@@ -35,6 +36,7 @@ public:
     void SendMsg(const char *pdata,int length);
     void StartListen();
     int  ConnectedNum();
+    void Send2Clients(char *pdata,int nLen);
 protected:
     void incomingConnection(qintptr socketDescriptor);
 };

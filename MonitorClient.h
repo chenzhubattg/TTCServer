@@ -11,8 +11,10 @@ public:
     MonitorClient(QObject *parent=0);
     QByteArray 		dataFlow;
 signals:
-    void updateClients(QString,int);
+  void updateClients(QString,int);
+    void updateClients(stFrameHeader *,char * ,int);
     void disconnected(int);
+    void slotsTest(QString ,int );
 protected slots:
     void dataReceived();
     void slotDisconnected();

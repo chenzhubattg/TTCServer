@@ -32,7 +32,7 @@ void WatcherServer::incomingConnection(qintptr socketDescriptor)
     QHostAddress	 add = tcpClientSocket->localAddress();
     quint16 port = tcpClientSocket->localPort();
     WatcherList.append(tcpClientSocket);
-    QString strLog = "IP " + tcpClientSocket->peerAddress().toString() + " connect WatcherServer.";
+    QString strLog = QString("%1(%2) connect WatcherServer.").arg(tcpClientSocket->peerAddress().toString()).arg(tcpClientSocket->peerPort());
     LogFile(glbfileLog,strLog);
 }
 
@@ -68,7 +68,19 @@ void WatcherServer::updateClients(QString msg,int length)
     }
 }
 
-void WatcherServer::SendMsg(const char *pdata,int length)
+ void WatcherServer::Send2Clients(char *pdata,int nLen)
+ {
+        for(int i=0;i<WatcherList.count();i++)
+        {
+            QTcpSocket *item = WatcherList.at(i);
+            if(item->write(pdata,nLen)!=nLen)
+            {
+                continue;
+            }
+        }
+    }
+
+ void WatcherServer::SendMsg(const char *pdata,int length)
 {
     for(int i=0;i<WatcherList.count();i++)
     {
@@ -91,6 +103,8 @@ void WatcherServer::slotDisconnected(int descriptor)
         QTcpSocket *item = WatcherList.at(i);
         if(item->socketDescriptor()==descriptor)
         {
+            QString strLog = QString("%1(%2) disconnect WatcherServer.").arg(item->peerAddress().toString()).arg(item->peerPort());
+            LogFile(glbfileLog,strLog);
             WatcherList.removeAt(i);
             return;
         }

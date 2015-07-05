@@ -15,8 +15,17 @@
 using namespace std;
 int main(int argc, char *argv[])
 {
-   QCoreApplication a(argc, argv);
+    char buf[104];
+     buf[0] = 'a';
+     buf[1] = 'a';
+     buf[2] = '\0';
+    QString str = buf;
+    cout << str.length()<<endl;
+//   return 0 ;
 
+
+
+    QCoreApplication a(argc, argv);
     QDir dirLog;
     QString strLogPath = QString("%1/Log").arg(QDir::currentPath());
     dirLog.mkdir(strLogPath);
@@ -28,6 +37,12 @@ int main(int argc, char *argv[])
         QString strLog("Creating log file is failure!");
         LogOut(strLog);
     }
+
+    QDir dirWork;
+    glbstrWorkDir = QString("%1/work").arg(QDir::currentPath());
+    dirWork.mkdir(glbstrWorkDir);
+
+
 
     MonitorServer MServer(NULL,7010);
     WatcherServer WServer(NULL,7002);

@@ -42,6 +42,7 @@ void WatcherClient::dataReceived()
 
 void WatcherClient::readMsgBody(stFrameHeader &header,char * body,int bodyLength)
 {
+    /*
     qint16 cmd = header.cmd;
     switch (cmd) {
     case CMD_LOAD:
@@ -94,7 +95,7 @@ void WatcherClient::readMsgBody(stFrameHeader &header,char * body,int bodyLength
     }
     default:
         break;
-    }
+    }*/
 }
 
 

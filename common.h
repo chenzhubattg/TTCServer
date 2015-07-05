@@ -4,6 +4,25 @@
 #include <QString>
 #include <QFile>
 
+const int  CMD_LOAD = 0x01;                               //  Load *.grc and *.xml of flow graph
+const int  CMD_START = 0x02           ;                  //  Running signal processing program in each nodes.
+const int CMD_KILL = 0x03              ;                    //  Kill signal processing thread in each nodes.
+const int CMD_SETPARAM = 0x04  ;                    //   Set system param by relaying *.xml
+const int CMD_GETSTATUS = 0x05;                     //   Get system status by relaying *.xml
+
+
+typedef enum ClusterStatus
+{
+    Idle,           //idel
+    Running
+
+};
+
+class WatcherStatus
+{
+public:
+    bool isRunning;
+};
 
 
 using namespace std;
@@ -14,18 +33,20 @@ extern QString glbLocalAdress;
 extern int         glbLocalPort;
 extern QString glbServerAdress;
 extern int         glbServerPort;
+extern ClusterStatus glbWatcherStatus;
+extern QString glbstrWorkDir;   //Save XML and GRC File
 
 
-const int CMD_LOAD = 0x0001;
-const int CMD_LOAD_RES = 0x0101;
-const int CMD_START = 0x0002;
-const int CMD_START_RES = 0x0102;
-const int CMD_STOP = 0x0003;
-const int CMD_STOP_RES = 0x0203;
-const int CMD_SET = 0x0004;
-const int CMD_SET_RES = 0x0104;
-const int CMD_KILL = 0x0005;
-const int CMD_KILL_RES = 0x0105;
+//const int CMD_LOAD = 0x0001;
+//const int CMD_LOAD_RES = 0x0101;
+//const int CMD_START = 0x0002;
+//const int CMD_START_RES = 0x0102;
+//const int CMD_STOP = 0x0003;
+//const int CMD_STOP_RES = 0x0203;
+//const int CMD_SET = 0x0004;
+//const int CMD_SET_RES = 0x0104;
+//const int CMD_KILL = 0x0005;
+//const int CMD_KILL_RES = 0x0105;
 
 
 //TODO
@@ -36,6 +57,8 @@ public:
     string CapOfCache;
     string freq;
 };
+
+
 
 
 

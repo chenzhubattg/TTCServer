@@ -23,6 +23,10 @@ QString glbServerAdress = "127.0.0.1";
 int         glbServerPort = 9090;
 
 QFile glbfileLog;
+ClusterStatus glbWatcherStatus;
+
+
+QString glbstrWorkDir;
 
 void InitSystemParam()
 {
