@@ -19,20 +19,21 @@ void WatcherClient::dataReceived()
         char *p=dataFlow.data();
         char *q=p+dataFlow.size();
 
-        while(true){
+        while(true)
+        {
             //1.读Header
             if(q-p<sizeof(stFrameHeader))break ;	//帧头不完整包，退出
-                stFrameHeader header;
-                memcpy(&header, p, sizeof(stFrameHeader));
+            stFrameHeader header;
+            memcpy(&header, p, sizeof(stFrameHeader));
                 //header.print();
-
             if(header.FLAG[0]!='M' || header.FLAG[1]!='M' || header.FLAG[2]!='X' || header.FLAG[3]!='H'){
                 p=q;		//Header不对，丢弃当前所有缓存
                 break ;
             }
             //2.读BODY,并移动流指针
             if(q-p<sizeof(stFrameHeader)+header.DATA_LEN)break ;//内容不完整包，退出
-                readMsgBody(header, p+sizeof(stFrameHeader),header.DATA_LEN);
+//                readMsgBody(header, p+sizeof(stFrameHeader),header.DATA_LEN);
+            emit updateClients(&header, p+sizeof(stFrameHeader), header.DATA_LEN,  this->peerAddress().toString() );
                 p+=sizeof(stFrameHeader)+header.DATA_LEN;
         }
         dataFlow=dataFlow.right( q - p);

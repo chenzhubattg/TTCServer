@@ -16,8 +16,8 @@ class WatcherServer : public QTcpServer
 public:
     WatcherServer(QObject *parent=0,int port=0);
     QList<TcpClientSocket*> tcpClientSocketList;
-     QList <MonitorClient *> MonitorList;
-     QList <WatcherClient *> WatcherList;
+    QList <MonitorClient *> MonitorList;
+    QList <WatcherClient *> WatcherList;
     QTimer *timer;
     QTcpServer *m_pMonServer;
     int                m_nListenPort;
@@ -31,12 +31,14 @@ public slots:
     void slotDisconnected(int);
     void update();
     void setMonitorServer(QTcpServer *pServer);
+    void slotReceive(stFrameHeader *header,char * body,qint32 bodyLength, QString IpAddress);
 
 public:
     void SendMsg(const char *pdata,int length);
     void StartListen();
     int  ConnectedNum();
-    void Send2Clients(char *pdata,int nLen);
+    void Send2Clients(char *pdata, qint32 nLen);
+    QString UpdateXml(QString newBlock, QString oldBlock, QString Ip);
 protected:
     void incomingConnection(qintptr socketDescriptor);
 };

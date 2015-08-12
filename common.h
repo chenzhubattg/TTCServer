@@ -4,18 +4,20 @@
 #include <QString>
 #include <QFile>
 
+#pragma pack(push)
+#pragma pack(1)
+
 const int  CMD_LOAD = 0x01;                               //  Load *.grc and *.xml of flow graph
-const int  CMD_START = 0x02           ;                  //  Running signal processing program in each nodes.
+const int  CMD_START = 0x02;                                //  Running signal processing program in each nodes.
 const int CMD_KILL = 0x03              ;                    //  Kill signal processing thread in each nodes.
 const int CMD_SETPARAM = 0x04  ;                    //   Set system param by relaying *.xml
 const int CMD_GETSTATUS = 0x05;                     //   Get system status by relaying *.xml
 
 
-typedef enum ClusterStatus
+/*typedef*/ enum ClusterStatus
 {
     Idle,           //idel
     Running
-
 };
 
 class WatcherStatus
@@ -35,7 +37,10 @@ extern QString glbServerAdress;
 extern int         glbServerPort;
 extern ClusterStatus glbWatcherStatus;
 extern QString glbstrWorkDir;   //Save XML and GRC File
-
+extern int glbWatcherServerPort; // = 9001;
+extern int glbMonitorServerPort; // = 9000;
+extern QString XMLFileName;
+extern QString glboldString;
 
 //const int CMD_LOAD = 0x0001;
 //const int CMD_LOAD_RES = 0x0101;
@@ -89,7 +94,7 @@ public:
         cmd = 0x11;
     }
     char FLAG[4];
-    qint16 DATA_LEN;
+    qint32 DATA_LEN;
     qint16 cmd;
 };//head for msg
 
@@ -131,6 +136,6 @@ extern bool KillProcess(QString sName);
 extern void InitSystemParam();
 extern void LogOut(QString strLog);
 extern void LogFile(QFile &file, QString strLog);
-
+#pragma pack(pop)
 #endif  // DATACLASS
 

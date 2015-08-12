@@ -22,10 +22,13 @@ int         glbLocalPort = 8010;
 QString glbServerAdress = "127.0.0.1";
 int         glbServerPort = 9090;
 
+int glbWatcherServerPort = 9001;
+int glbMonitorServerPort = 9000;
+
 QFile glbfileLog;
 ClusterStatus glbWatcherStatus;
-
-
+QString XMLFileName;
+QString glboldString;
 QString glbstrWorkDir;
 
 void InitSystemParam()
@@ -106,7 +109,7 @@ void LogFile(QFile &file, QString strLog)
         return;
     }
     strLog = QTime::currentTime().toString("hh:mm:ss.zzz ") + strLog + "\n";
-    file.write(strLog.toStdString().c_str(),strLog.length());
+    file.write(strLog.toStdString().c_str(), strLog.length());
     cout << strLog.toStdString().c_str();
 
 }

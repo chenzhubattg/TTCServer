@@ -11,15 +11,15 @@ public:
     MonitorClient(QObject *parent=0);
     QByteArray 		dataFlow;
 signals:
-  void updateClients(QString,int);
-    void updateClients(stFrameHeader *,char * ,int);
+    void updateClients( QString,int );
+    void updataClients( stFrameHeader *,char * ,qint32 );
     void disconnected(int);
-    void slotsTest(QString ,int );
+    void slotsT(QString * ,int * );
 protected slots:
     void dataReceived();
     void slotDisconnected();
 public:
-    void readMsgBody(stFrameHeader &header,char * body,int bodyLength);
+    void readMsgBody( stFrameHeader &header,char * body,int bodyLength );
 };
 
 #endif // TCPCLIENTSOCKET_H
