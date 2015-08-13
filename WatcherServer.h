@@ -30,6 +30,7 @@ public slots:
     void updateClients(QString,int);
     void slotDisconnected(int);
     void update();
+    void SendStatus();
     void setMonitorServer(QTcpServer *pServer);
     void slotReceive(stFrameHeader *header,char * body,qint32 bodyLength, QString IpAddress);
 

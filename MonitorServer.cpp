@@ -215,6 +215,7 @@ void MonitorServer::slotReceive(stFrameHeader *header, char * body, qint32 bodyL
         LogFile(glbfileLog,"Receive START cmd");
                 WatcherServer *pWserver = (WatcherServer *) m_pWatcherServer;
         pWserver->Send2Clients((char *)header,sizeof(stFrameHeader));
+       pWserver->timer->start(1000);
      //   pWserver->Send2Clients(body,bodyLength);
         break;
     }
@@ -223,6 +224,7 @@ void MonitorServer::slotReceive(stFrameHeader *header, char * body, qint32 bodyL
         LogFile(glbfileLog,"Receive KILL cmd");
                 WatcherServer *pWserver = (WatcherServer *) m_pWatcherServer;
         pWserver->Send2Clients((char *)header,sizeof(stFrameHeader));
+        pWserver->timer->stop();
      //   pWserver->Send2Clients(body,bodyLength);
         break;
     }

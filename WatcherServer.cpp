@@ -7,6 +7,8 @@ WatcherServer::WatcherServer(QObject *parent,int port)
 {
     m_nListenPort = port;
     m_pMonServer = NULL;
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(SendStatus()));
 }
 
 void WatcherServer::StartListen()
@@ -50,6 +52,16 @@ void WatcherServer::update()
     item->write(str.toStdString().c_str(),str.length());
     nfre += 100;
 
+}
+
+void WatcherServer::SendStatus()
+{
+    stFrameHeader header;
+    header.cmd = CMD_GETSTATUS;
+    header.DATA_LEN = glboldString.length();
+    MonitorServer *pMserver = (MonitorServer *) m_pMonServer;
+    pMserver->Send2Clients((char *)&header,sizeof(stFrameHeader));
+    pMserver->Send2Clients((char*)glboldString.toStdString().c_str(), glboldString.length());
 }
 
 void WatcherServer::setMonitorServer(QTcpServer *pServer)
@@ -150,11 +162,16 @@ void WatcherServer::slotReceive(stFrameHeader *header, char * body, qint32 bodyL
 //                return;
 //            QString oldString = oldfile.readAll();
 //            oldfile.close();
-
+            QStringList newFileList = QString(pdata).split("<block>");
+            QStringList oldFileList = glboldString.split("<block>");
+             if (newFileList.length() != oldFileList.length())
+             {
+                 return;
+             }
             glboldString = UpdateXml(QString(pdata), glboldString, IpAddress);
-            MonitorServer *pMserver = (MonitorServer *) m_pMonServer;
-            pMserver->Send2Clients((char *)header,sizeof(stFrameHeader));
-            pMserver->Send2Clients((char*)glboldString.toStdString().c_str(), glboldString.length());
+            //MonitorServer *pMserver = (MonitorServer *) m_pMonServer;
+            //pMserver->Send2Clients((char *)header,sizeof(stFrameHeader));
+            //pMserver->Send2Clients((char*)glboldString.toStdString().c_str(), glboldString.length());
             break;
         }
     }
